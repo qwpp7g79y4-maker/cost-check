@@ -21,7 +21,7 @@ Gedraaid op Linux x86_64 op 45905fc, met rustc 1.99.0 en cargo 1.99.0 (stable) e
 | `cargo +1.85 fmt --check` | schoon, exit 0 |
 | `cargo +1.85 clippy --all-targets --locked -- -D warnings` | schoon, exit 0 |
 | `cargo +1.85 test --locked` (debug) | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 |
-| `cargo +1.85 test --release --locked` | niet uitgevoerd (not run) |
+| `cargo +1.85 test --release --locked` | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 (2026-11-25) |
 
 Per testbinary, in de debug- en release-run op stable en in de debug-run op 1.85:
 

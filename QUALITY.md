@@ -21,7 +21,7 @@ Run on Linux x86_64 on 45905fc, with rustc 1.99.0 and cargo 1.99.0 (stable) and 
 | `cargo +1.85 fmt --check` | clean, exit 0 |
 | `cargo +1.85 clippy --all-targets --locked -- -D warnings` | clean, exit 0 |
 | `cargo +1.85 test --locked` (debug) | 106 passed, 0 failed, 1 ignored, exit 0 |
-| `cargo +1.85 test --release --locked` | not run |
+| `cargo +1.85 test --release --locked` | 106 passed, 0 failed, 1 ignored, exit 0 (2026-11-25) |
 
 Per test binary, in the debug and release runs on stable and in the debug run on 1.85:
 
