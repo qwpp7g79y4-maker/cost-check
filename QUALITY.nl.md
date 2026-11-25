@@ -4,20 +4,26 @@ Korte, eerlijke stand van wat in deze repository getest is en hoe. Engelse versi
 
 ## Geteste commit
 
-Datum: 2026-11-25. Geteste codecommit: 3953b2b. Commits daarna wijzigen alleen documenten.
+Datum: 2026-11-25. Geteste codecommit: 45905fc. Commits daarna wijzigen alleen documenten.
+
+45905fc is een reparatie van één functie in `src/money.rs`: clippy van Rust 1.85 keurde `parse_fixed` af (`clippy::comparison_chain`) op de eerdere codecommit 3953b2b, dus de `if`-keten werd een `match` op `Ordering`. Geen `allow` en geen `expect`. Vóór de reparatie was `cargo +1.85 fmt --check` schoon en faalde `cargo +1.85 clippy --all-targets --locked -- -D warnings` met exit 101; `cargo +1.85 test` is op 3953b2b niet uitgevoerd (not run). De stable-uitslagen die op 3953b2b stonden, zijn vervangen door de uitslagen op 45905fc hieronder.
 
 ## Uitslag
 
-Gedraaid op Linux x86_64, rustc 1.99.0, cargo 1.99.0, op 3953b2b:
+Gedraaid op Linux x86_64 op 45905fc, met rustc 1.99.0 en cargo 1.99.0 (stable) en met rustc 1.85.1 en cargo 1.85.1:
 
 | Opdracht | Uitslag |
 |---|---|
-| `cargo fmt --check` | schoon, exit 0 |
-| `cargo clippy --all-targets --locked -- -D warnings` | schoon, exit 0 |
-| `cargo test --locked` (debug) | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 |
-| `cargo test --release --locked` | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 |
+| `cargo fmt --check` (stable) | schoon, exit 0 |
+| `cargo clippy --all-targets --locked -- -D warnings` (stable) | schoon, exit 0 |
+| `cargo test --locked` (stable, debug) | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 |
+| `cargo test --release --locked` (stable) | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 |
+| `cargo +1.85 fmt --check` | schoon, exit 0 |
+| `cargo +1.85 clippy --all-targets --locked -- -D warnings` | schoon, exit 0 |
+| `cargo +1.85 test --locked` (debug) | 106 geslaagd, 0 mislukt, 1 genegeerd, exit 0 |
+| `cargo +1.85 test --release --locked` | niet uitgevoerd (not run) |
 
-Per testbinary, in beide profielen:
+Per testbinary, in de debug- en release-run op stable en in de debug-run op 1.85:
 
 - 60 unittests in `src/lib.rs`, allemaal groen
 - 0 tests in `src/main.rs`
@@ -30,7 +36,7 @@ Per testbinary, in beide profielen:
 ## Niet uitgevoerd (not run)
 
 - De GitHub Actions-run van `.github/workflows/ci.yml` (Windows, macOS, Rust 1.85, `cargo deny`): niet uitgevoerd (not run). Er is niets gepusht.
-- `cargo +1.85 test`, de Windows- en macOS-targets, `cargo deny` en `cargo audit`: niet uitgevoerd (not run).
+- `cargo +1.85 test --release`, de Windows- en macOS-targets, `cargo deny` en `cargo audit`: niet uitgevoerd (not run).
 - `tests/live.rs` met de echte tools: niet uitgevoerd (not run).
 - Een CRLF-checkout (`core.autocrlf=true`) van de golden fixture: niet uitgevoerd (not run).
 - Mutatietests, fuzzing en dekking: niet uitgevoerd (not run).
