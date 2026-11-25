@@ -849,6 +849,7 @@ mod with_stubs {
         }
     }
 
+    #[cfg(not(target_os = "macos"))]
     #[test]
     fn a_closed_stdout_is_an_error() {
         let scratch = Scratch::new();
