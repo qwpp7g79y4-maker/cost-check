@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cost Check</title>
+<style>
+  body { font: 16px/1.45 sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #111; background: #fff; }
+  label { display: block; margin: 0.9rem 0 0.2rem; }
+  button, a { font: inherit; }
+  button { margin-top: 1rem; padding: 0.4rem 0.8rem; }
+  pre { white-space: pre-wrap; background: #f4f4f4; padding: 1rem; }
+  .note { margin-top: 0; }
+</style>
+</head>
+<body>
+<h1>Cost Check</h1>
+<p class="note">De export blijft op deze computer. Geen account. Het bestand wordt gewist zodra het rapport klaar is.</p>
+<form id="f" action="/report" method="post" enctype="multipart/form-data">
+  <label for="tool">Tool</label>
+  <select id="tool" name="tool">
+    <option value="auto">automatisch</option>
+    <option value="ci-bill">ci-bill</option>
+    <option value="log-bill">log-bill</option>
+    <option value="dd-metric-bill">dd-metric-bill</option>
+    <option value="rum-meter">rum-meter</option>
+  </select>
+  <label for="export">Export</label>
+  <input id="export" name="export" type="file" required>
+  <label for="workflow">Workflows, alleen voor ci-bill</label>
+  <input id="workflow" name="workflow" type="file" accept=".yml,.yaml" multiple>
+  <label for="prices">Prijsbestand</label>
+  <input id="prices" name="prices" type="file" accept=".json,application/json">
+  <label for="window">Venster voor log-bill, bijvoorbeeld 1m</label>
+  <input id="window" name="window" type="text" autocomplete="off">
+  <label for="plan">Plan voor dd-metric-bill</label>
+  <select id="plan" name="plan">
+    <option value="">geen</option>
+    <option value="pro">pro</option>
+    <option value="enterprise">enterprise</option>
+  </select>
+  <label for="hosts">Hosts, alleen samen met een plan</label>
+  <input id="hosts" name="hosts" type="number" min="1" step="1">
+  <label for="allow_tags">Allow-tags, komma's, zonder spaties</label>
+  <input id="allow_tags" name="allow_tags" type="text" autocomplete="off">
+  <label for="hours">Uren per maand voor rum-meter</label>
+  <input id="hours" name="hours" type="number" min="1" max="1000" step="1">
+  <label for="format">Formaat, leeg laat de pagina kiezen</label>
+  <select id="format" name="format">
+    <option value="">automatisch</option>
+    <option value="text">text</option>
+    <option value="jsonl">jsonl</option>
+    <option value="dogstatsd">dogstatsd</option>
+    <option value="prometheus">prometheus</option>
+  </select>
+  <button type="submit">Maak rapport</button>
+</form>
+<p><a id="save" hidden download="kostencheck.md">Bewaar rapport</a></p>
+<pre id="out" hidden></pre>
+<script>
+document.getElementById("f").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var form = ev.target;
+  var out = document.getElementById("out");
+  var save = document.getElementById("save");
+  out.hidden = false;
+  save.hidden = true;
+  out.textContent = "Bezig…";
+  fetch("/report", { method: "POST", body: new FormData(form) }).then(function (res) {
+    return res.text().then(function (text) {
+      out.textContent = text;
+      if (res.ok) {
+        save.href = URL.createObjectURL(new Blob([text], { type: "text/markdown" }));
+        save.hidden = false;
+      }
+    });
+  }).catch(function () {
+    out.textContent = "Geen antwoord van deze computer.";
+  });
+});
+</script>
+</body>
+</html>

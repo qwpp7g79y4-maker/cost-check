@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "currency": "USD",
+  "period": { "from": "2026-09-01", "to": "2026-09-30" },
+  "repositories": ["example-org/sample-app"],
+  "total_net": "284.208000",
+  "unattached_findings": [],
+  "workflows": [
+    {
+      "net": "230.144000",
+      "findings": [
+        {
+          "id": "F1",
+          "file": "samples/.github/workflows/lint.yml",
+          "line": 8,
+          "message": "lint on macOS",
+          "savings": "207.872000"
+        },
+        {
+          "id": "F2",
+          "file": "samples/.github/workflows/lint.yml",
+          "line": 7,
+          "message": "default timeout is 360 minutes",
+          "savings": "22.320000"
+        },
+        {
+          "id": "F3",
+          "file": "samples/.github/workflows/lint.yml",
+          "line": 2,
+          "message": "pull_request without concurrency cancel-in-progress",
+          "savings": "0.000000"
+        }
+      ],
+      "job_costs": [
+        {
+          "amount": "230.144000",
+          "file": "samples/.github/workflows/lint.yml",
+          "job_id": null,
+          "line": 8,
+          "name": "lint"
+        }
+      ]
+    },
+    {
+      "net": "44.232000",
+      "findings": [],
+      "job_costs": [
+        {
+          "amount": "44.232000",
+          "file": "samples/.github/workflows/ci.yml",
+          "job_id": null,
+          "line": 9,
+          "name": "test"
+        }
+      ]
+    },
+    {
+      "net": "7.720000",
+      "findings": [],
+      "job_costs": [
+        {
+          "amount": "7.720000",
+          "file": "samples/.github/workflows/release.yml",
+          "job_id": null,
+          "line": 7,
+          "name": "build-windows"
+        }
+      ]
+    },
+    {
+      "net": "2.112000",
+      "findings": [
+        {
+          "id": "F2",
+          "file": "samples/.github/workflows/docs.yml",
+          "line": 4,
+          "message": "default timeout is 360 minutes",
+          "savings": "2.160000"
+        }
+      ],
+      "job_costs": [
+        {
+          "amount": "2.112000",
+          "file": "samples/.github/workflows/docs.yml",
+          "job_id": null,
+          "line": 5,
+          "name": "docs"
+        }
+      ]
+    },
+    {
+      "net": "0.000000",
+      "path": "(no workflow)",
+      "findings": [],
+      "job_costs": []
+    }
+  ]
+}
