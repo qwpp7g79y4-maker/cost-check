@@ -3,6 +3,8 @@
 //! `ci-bill` stores USD as micros and prints cents, half up, away from zero.
 //! The same steps live here so the Markdown matches `ci-bill report --md`.
 
+use std::cmp::Ordering;
+
 use crate::Fault;
 
 /// Parse a plain decimal into an integer at `scale` digits after the dot.
@@ -44,13 +46,15 @@ pub fn parse_fixed(raw: &str, scale: u32) -> Result<i128, Fault> {
     let mut round = 0i128;
     for (i, ch) in frac.chars().enumerate() {
         let digit = i128::from(ch as u8 - b'0');
-        if (i as u32) < scale {
-            let pow = 10i128.pow(scale - 1 - i as u32);
-            acc = acc
-                .checked_add(digit * pow)
-                .ok_or_else(|| Fault::new("geen bedrag"))?;
-        } else if i as u32 == scale {
-            round = digit;
+        match (i as u32).cmp(&scale) {
+            Ordering::Less => {
+                let pow = 10i128.pow(scale - 1 - i as u32);
+                acc = acc
+                    .checked_add(digit * pow)
+                    .ok_or_else(|| Fault::new("geen bedrag"))?;
+            }
+            Ordering::Equal => round = digit,
+            Ordering::Greater => {}
         }
     }
     if round >= 5 {
