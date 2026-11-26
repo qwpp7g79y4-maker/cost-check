@@ -27,13 +27,13 @@ target/release/cost-check report --tool dd-metric-bill \
 
 This reads `metrics.dogstatsd`, writes `report.md` and leaves the input alone. Nothing is written into this repository.
 
-## Aan de slag in 5 minuten
+## Quickstart in 5 minutes
 
-1. Bouw het programma: `cargo build --release -j 2`.
-2. Zorg dat de binary van de tool bij je export bereikbaar is, bijvoorbeeld op `PATH`.
-3. Draai `cost-check report --input export.csv --out rapport.md`. `--tool` mag weg: `auto` herkent het formaat.
-4. Of start `cost-check serve`, open `http://127.0.0.1:4517/` op deze computer en kies de export.
-5. Lees `rapport.md`. De volledige Nederlandse uitleg staat in [README.nl.md](README.nl.md).
+1. Build the program: `cargo build --release -j 2`.
+2. Make sure the binary of the tool for your export can be found, for example on `PATH`.
+3. Run `cost-check report --input export.csv --out report.md`. `--tool` can be left out: `auto` recognises the format.
+4. Or start `cost-check serve`, open `http://127.0.0.1:4517/` on this computer and choose the export.
+5. Read `report.md`. The full Dutch explanation is in [README.nl.md](README.nl.md).
 
 ## Options
 
