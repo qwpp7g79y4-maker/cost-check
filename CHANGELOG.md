@@ -26,6 +26,7 @@ Changes made after 2026-11-25; the version number did not change.
 
 - `--tool auto` no longer reads a JSONL line that starts directly with `{` (`{"level":"error",...}`) as Prometheus text. An empty prefix before the `{` is no metric name; before this, the export went to `dd-metric-bill` and exited 2.
 - `.gitattributes` (`* text=auto eol=lf`), so a CRLF checkout does not turn the golden fixture `tests/fixtures/ci.md` red.
+- A log-bill export with many patterns and a price file, and a dd-metric-bill export with many tag keys, no longer take time that grows with the square of the input (B-2). 80 000 priced patterns took 39 s and now take 0.3 s; the report is the same byte for byte.
 
 ### Tests
 
