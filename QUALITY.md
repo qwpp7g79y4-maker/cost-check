@@ -1,6 +1,14 @@
 # Quality notes
 
-pep: 10
+pep: niet AF
+
+## Open
+
+| Point | Class | Deduction |
+|---|---|---|
+| B-2 is still open. It was not repaired. `pattern_month` was not changed and no `HashMap` was added for patterns. | B- | no score: not done |
+
+An open B or B- means the tool is not done and gets no score.
 
 Short, honest status of what is tested in this repository and how. Dutch version: [QUALITY.nl.md](QUALITY.nl.md).
 

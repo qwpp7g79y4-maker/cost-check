@@ -1,6 +1,14 @@
 # Kwaliteitsnotities
 
-pep: 10
+pep: niet AF
+
+## Open
+
+| Punt | Klasse | Aftrek |
+|---|---|---|
+| B-2 staat nog open. Het is niet hersteld. `pattern_month` is niet gewijzigd en er is geen `HashMap` voor patronen bijgekomen. | B- | geen cijfer: niet AF |
+
+Een open B of B- betekent: de tool is niet AF en krijgt geen cijfer.
 
 Korte, eerlijke stand van wat in deze repository getest is en hoe. Engelse versie: [QUALITY.md](QUALITY.md).
 
