@@ -1,5 +1,7 @@
 //! JSON from each tool, filled into the one report.
 
+use std::collections::{HashMap, HashSet};
+
 use serde_json::Value;
 
 use crate::model::{finding_headers, top_headers, Teardown};
@@ -282,6 +284,7 @@ fn log_report(json: &Value) -> Result<Teardown, Fault> {
             .unwrap_or(0);
         (format!("{lines} lines, {bytes} bytes"), "bytes".to_string())
     };
+    let prices = price_index(json);
     let mut patterns = Vec::new();
     for pattern in array(json, "patterns") {
         let id = pattern
@@ -311,7 +314,7 @@ fn log_report(json: &Value) -> Result<Teardown, Fault> {
             .get("rest")
             .and_then(Value::as_bool)
             .unwrap_or(false);
-        let priced = pattern_month(json, &id)?;
+        let priced = pattern_month(&prices, &id)?;
         patterns.push(LogPattern {
             id,
             text,
@@ -407,20 +410,28 @@ struct LogPattern {
     priced: Option<String>,
 }
 
-fn pattern_month(json: &Value, id: &str) -> Result<Option<String>, Fault> {
-    let Some(patterns) = json.pointer("/costs/patterns").and_then(Value::as_array) else {
+/// Each id in `costs.patterns` once, mapped to its first entry. A later entry
+/// with the same id is ignored, as before, so the first one still wins.
+fn price_index(json: &Value) -> HashMap<&str, &Value> {
+    let mut index = HashMap::new();
+    if let Some(patterns) = json.pointer("/costs/patterns").and_then(Value::as_array) {
+        for pattern in patterns {
+            if let Some(id) = pattern.get("id").and_then(Value::as_str) {
+                index.entry(id).or_insert(pattern);
+            }
+        }
+    }
+    index
+}
+
+fn pattern_month(prices: &HashMap<&str, &Value>, id: &str) -> Result<Option<String>, Fault> {
+    let Some(pattern) = prices.get(id) else {
         return Ok(None);
     };
-    for pattern in patterns {
-        if pattern.get("id").and_then(Value::as_str) != Some(id) {
-            continue;
-        }
-        let Some(raw) = pattern.pointer("/ingest/per_month").and_then(Value::as_str) else {
-            return Ok(None);
-        };
-        return Ok(Some(display_amount(raw)?));
-    }
-    Ok(None)
+    let Some(raw) = pattern.pointer("/ingest/per_month").and_then(Value::as_str) else {
+        return Ok(None);
+    };
+    Ok(Some(display_amount(raw)?))
 }
 
 fn mask_to_regex(text: &str) -> String {
@@ -596,6 +607,8 @@ struct Tag {
 /// entries: each keeps its own series count, its own bounds and its own name.
 fn collect_tags(json: &Value) -> Vec<Tag> {
     let mut tags: Vec<Tag> = Vec::new();
+    // (metric, key) to its place in `tags`, so a lookup does not scan the list.
+    let mut places: HashMap<(String, String), usize> = HashMap::new();
     for metric in array(json, "tags") {
         let metric_name = metric.get("name").and_then(Value::as_str).unwrap_or("");
         for key in array(metric, "keys") {
@@ -603,9 +616,10 @@ fn collect_tags(json: &Value) -> Vec<Tag> {
                 continue;
             };
             let added = key.get("added").and_then(Value::as_u64).unwrap_or(0);
-            if let Some(existing) = entry(&mut tags, metric_name, name) {
+            if let Some(existing) = entry(&mut tags, &places, metric_name, name) {
                 existing.added = existing.added.saturating_add(added);
             } else {
+                places.insert((metric_name.to_string(), name.to_string()), tags.len());
                 tags.push(Tag {
                     key: name.to_string(),
                     added,
@@ -633,7 +647,7 @@ fn collect_tags(json: &Value) -> Vec<Tag> {
                         .collect()
                 })
                 .unwrap_or_default();
-            if let Some(existing) = entry(&mut tags, metric_name, name) {
+            if let Some(existing) = entry(&mut tags, &places, metric_name, name) {
                 existing.unbounded = true;
                 for reason in reasons {
                     if !existing.reasons.contains(&reason) {
@@ -641,6 +655,7 @@ fn collect_tags(json: &Value) -> Vec<Tag> {
                     }
                 }
             } else {
+                places.insert((metric_name.to_string(), name.to_string()), tags.len());
                 tags.push(Tag {
                     key: name.to_string(),
                     added: 0,
@@ -654,9 +669,14 @@ fn collect_tags(json: &Value) -> Vec<Tag> {
     tags
 }
 
-fn entry<'a>(tags: &'a mut [Tag], metric: &str, key: &str) -> Option<&'a mut Tag> {
-    tags.iter_mut()
-        .find(|tag| tag.metric == metric && tag.key == key)
+fn entry<'a>(
+    tags: &'a mut [Tag],
+    places: &HashMap<(String, String), usize>,
+    metric: &str,
+    key: &str,
+) -> Option<&'a mut Tag> {
+    let place = *places.get(&(metric.to_string(), key.to_string()))?;
+    tags.get_mut(place)
 }
 
 /// The entries to report. An allowlist works on key names, so a key that is
@@ -699,10 +719,12 @@ fn suggest_allow(tags: &[Tag], dropped: &[Tag]) -> Option<String> {
     if dropped.is_empty() {
         return None;
     }
+    let dropped_keys: HashSet<&str> = dropped.iter().map(|drop| drop.key.as_str()).collect();
+    let mut seen: HashSet<&str> = HashSet::new();
     let mut kept: Vec<&str> = Vec::new();
     for tag in tags {
         let key = tag.key.as_str();
-        if !dropped.iter().any(|drop| drop.key == tag.key) && !kept.contains(&key) {
+        if !dropped_keys.contains(key) && seen.insert(key) {
             kept.push(key);
         }
     }
@@ -1039,6 +1061,112 @@ mod tests {
             text.contains("drop user \\d+ failed at \\S+ from \\S+\n"),
             "{text}"
         );
+    }
+
+    fn many_patterns(count: usize) -> Value {
+        let patterns: Vec<Value> = (0..count)
+            .map(|n| {
+                serde_json::json!({
+                    "id": format!("P{n}"),
+                    "text": format!("line {n}"),
+                    "lines": 1,
+                    "bytes": n as u64 + 1,
+                    "share": "0.1",
+                    "rest": false
+                })
+            })
+            .collect();
+        // Prices in the opposite order, so a lookup cannot rely on the position.
+        let prices: Vec<Value> = (0..count)
+            .rev()
+            .map(|n| {
+                serde_json::json!({
+                    "id": format!("P{n}"),
+                    "ingest": {"per_month": format!("{n}.00")}
+                })
+            })
+            .collect();
+        serde_json::json!({
+            "schema_version": 1,
+            "tool": "log-bill",
+            "inputs": {"paths": ["app.log"]},
+            "totals": {"lines": count, "bytes": count},
+            "patterns": patterns,
+            "costs": {
+                "currency": "USD",
+                "totals": {"ingest": {"per_month": "1.00"}},
+                "patterns": prices
+            }
+        })
+    }
+
+    #[test]
+    fn many_log_patterns_are_each_priced_from_their_own_id() {
+        // B-2: the price lookup was one scan of `costs.patterns` per pattern.
+        // 40 000 patterns took 30 s in release; with the index it is one pass.
+        let count = 40_000;
+        let text = crate::model::render(&log_report(&many_patterns(count)).unwrap());
+        let last = count - 1;
+        assert!(
+            text.contains(&format!("| line {last} | P{last} | {last}.00 |")),
+            "{text}"
+        );
+        let fifth = count - 5;
+        assert!(
+            text.contains(&format!("| line {fifth} | P{fifth} | {fifth}.00 |")),
+            "{text}"
+        );
+    }
+
+    #[test]
+    fn the_first_price_for_an_id_still_wins() {
+        let mut json = many_patterns(1);
+        json["costs"]["patterns"] = serde_json::json!([
+            {"id": "P0", "ingest": {"per_month": "1.00"}},
+            {"id": "P0", "ingest": {"per_month": "999.00"}}
+        ]);
+        let text = crate::model::render(&log_report(&json).unwrap());
+        assert!(text.contains("| line 0 | P0 | 1.00 |"), "{text}");
+        assert!(!text.contains("999.00"), "{text}");
+    }
+
+    #[test]
+    fn a_pattern_without_a_price_shows_its_bytes() {
+        let mut json = many_patterns(1);
+        json["costs"]["patterns"] = serde_json::json!([{"id": "other"}]);
+        let text = crate::model::render(&log_report(&json).unwrap());
+        assert!(text.contains("| line 0 | P0 | 1 |"), "{text}");
+    }
+
+    #[test]
+    fn many_dd_keys_keep_their_order_and_counts() {
+        // B-2, dd part: one lookup per key scanned every key so far.
+        let count = 60_000;
+        let keys: Vec<Value> = (0..count)
+            .map(|n| serde_json::json!({"key": format!("k{n}"), "added": 1, "values": 2}))
+            .collect();
+        let unbounded: Vec<Value> = (0..count)
+            .step_by(2)
+            .map(|n| serde_json::json!({"key": format!("k{n}"), "reasons": ["uuid-like"]}))
+            .collect();
+        let json = serde_json::json!({
+            "tags": [
+                {"name": "m", "keys": keys},
+                {"name": "m", "keys": [{"key": "k1", "added": 2}]}
+            ],
+            "unbounded": [{"name": "m", "keys": unbounded}]
+        });
+        let tags = collect_tags(&json);
+        assert_eq!(tags.len(), count);
+        assert_eq!(tags[0].key, "k0");
+        assert_eq!(tags[count - 1].key, format!("k{}", count - 1));
+        assert_eq!(tags[1].added, 3);
+        assert!(tags[0].unbounded && !tags[1].unbounded);
+        let dropped = tags_to_drop(&tags);
+        assert_eq!(dropped.len(), count / 2);
+        let allow = suggest_allow(&tags, &dropped).unwrap();
+        assert!(allow.starts_with("k1,k3,k5,"), "{allow}");
+        assert_eq!(allow.split(',').count(), count / 2);
     }
 
     #[test]
