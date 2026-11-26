@@ -1,8 +1,8 @@
 # Quality notes
 
-pep: 10
+pep: niet AF
 
-No open B, B-, M, M-, S or S-: 10 − 0 = 10.
+Update 2026-11-26: B-2 is repaired in 6778ec7 (see below). The pep line above stays as it was set and is not recalculated in this change.
 
 Short, honest status of what is tested in this repository and how. Dutch version: [QUALITY.nl.md](QUALITY.nl.md).
 
