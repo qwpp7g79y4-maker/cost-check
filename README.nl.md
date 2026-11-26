@@ -1,5 +1,7 @@
 # Cost Check
 
+[![crates.io](https://img.shields.io/crates/v/cost-check.svg)](https://crates.io/crates/cost-check) [![downloads](https://img.shields.io/crates/d/cost-check.svg)](https://crates.io/crates/cost-check) [![CI](https://github.com/qwpp7g79y4-maker/cost-check/actions/workflows/ci.yml/badge.svg)](https://github.com/qwpp7g79y4-maker/cost-check/actions/workflows/ci.yml) [![PEPAI checked](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fqwpp7g79y4-maker%2Fcost-check%2Fmain%2F.github%2Fbadge.json)](QUALITY.md) [![MSRV 1.85](https://img.shields.io/badge/MSRV-1.85-blue.svg)](https://github.com/qwpp7g79y4-maker/cost-check/blob/main/Cargo.toml) [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](https://github.com/qwpp7g79y4-maker/cost-check#license)
+
 Eén lokaal rapport voor `ci-bill`, `log-bill`, `dd-metric-bill` en `rum-meter`. English version: [README.md](README.md).
 
 De klant levert een export aan. Het programma schrijft het rapport in de vorm van `ci-bill report --md`: periode, totaal, de grootste posten, bevindingen en een concreet voorstel. Dat gebeurt op deze computer. Er is geen account en geen netwerk: er zit geen netwerk-crate in, `report` en `render` maken geen verbinding en `serve` luistert alleen op een loopback-adres.
@@ -104,3 +106,5 @@ De licenties van de externe crates in het programma staan in [THIRD-PARTY-LICENS
 ## Onderhoud
 
 Cost Check wordt onderhouden door PEPAI. Meld problemen via Issues, met een test waar dat kan (zie [CONTRIBUTING.md](CONTRIBUTING.md)); beveiligingsproblemen gaan via [SECURITY.md](SECURITY.md). Wijzigingen staan in [CHANGELOG.md](CHANGELOG.md) en de teststand in [QUALITY.nl.md](QUALITY.nl.md). Voor een wijziging: `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings` en `cargo test -- --test-threads=2`.
+
+Na een release staat de tool in sluimermodus (dormant): een nieuwe versie komt er alleen bij een gemelde bug, een verzoek of een beveiligingsprobleem. Beveiliging gaat altijd voor.

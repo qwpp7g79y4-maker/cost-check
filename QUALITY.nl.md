@@ -1,5 +1,7 @@
 # Kwaliteitsnotities
 
+pep: 8.6
+
 Korte, eerlijke stand van wat in deze repository getest is en hoe. Engelse versie: [QUALITY.md](QUALITY.md).
 
 ## Geteste commit
