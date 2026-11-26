@@ -1,5 +1,7 @@
 # Quality notes
 
+pep: 10
+
 Short, honest status of what is tested in this repository and how. Dutch version: [QUALITY.nl.md](QUALITY.nl.md).
 
 ## Tested commit

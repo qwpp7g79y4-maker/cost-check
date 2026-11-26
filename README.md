@@ -1,5 +1,7 @@
 # Cost Check
 
+[![crates.io](https://img.shields.io/crates/v/cost-check.svg)](https://crates.io/crates/cost-check) [![downloads](https://img.shields.io/crates/d/cost-check.svg)](https://crates.io/crates/cost-check) [![CI](https://github.com/qwpp7g79y4-maker/cost-check/actions/workflows/ci.yml/badge.svg)](https://github.com/qwpp7g79y4-maker/cost-check/actions/workflows/ci.yml) [![PEPAI checked](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fqwpp7g79y4-maker%2Fcost-check%2Fmain%2F.github%2Fbadge.json)](QUALITY.md) [![MSRV 1.85](https://img.shields.io/badge/MSRV-1.85-blue.svg)](https://github.com/qwpp7g79y4-maker/cost-check/blob/main/Cargo.toml) [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](https://github.com/qwpp7g79y4-maker/cost-check#license)
+
 One local report for `ci-bill`, `log-bill`, `dd-metric-bill` and `rum-meter`. Dutch version: [README.nl.md](README.nl.md).
 
 The customer hands over an export. The program writes the report in the shape of `ci-bill report --md`: period, total, the biggest items, findings, and one concrete suggestion. All of that happens on this computer. There is no account and no network: no network crate is linked, `report` and `render` open no connection, and `serve` only listens on a loopback address.
@@ -27,13 +29,13 @@ target/release/cost-check report --tool dd-metric-bill \
 
 This reads `metrics.dogstatsd`, writes `report.md` and leaves the input alone. Nothing is written into this repository.
 
-## Aan de slag in 5 minuten
+## Quickstart in 5 minutes
 
-1. Bouw het programma: `cargo build --release -j 2`.
-2. Zorg dat de binary van de tool bij je export bereikbaar is, bijvoorbeeld op `PATH`.
-3. Draai `cost-check report --input export.csv --out rapport.md`. `--tool` mag weg: `auto` herkent het formaat.
-4. Of start `cost-check serve`, open `http://127.0.0.1:4517/` op deze computer en kies de export.
-5. Lees `rapport.md`. De volledige Nederlandse uitleg staat in [README.nl.md](README.nl.md).
+1. Build the program: `cargo build --release -j 2`.
+2. Make sure the binary of the tool for your export can be found, for example on `PATH`.
+3. Run `cost-check report --input export.csv --out report.md`. `--tool` can be left out: `auto` recognises the format.
+4. Or start `cost-check serve`, open `http://127.0.0.1:4517/` on this computer and choose the export.
+5. Read `report.md`. The full Dutch explanation is in [README.nl.md](README.nl.md).
 
 ## Options
 
@@ -122,3 +124,5 @@ The licenses of the third-party crates built into the binary are listed in [THIR
 ## Maintenance
 
 Cost Check is maintained by PEPAI. Report problems through Issues, with a test where you can (see [CONTRIBUTING.md](CONTRIBUTING.md)); security problems go through [SECURITY.md](SECURITY.md). Changes are listed in [CHANGELOG.md](CHANGELOG.md) and the state of testing is in [QUALITY.md](QUALITY.md). Before a change: `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings` and `cargo test -- --test-threads=2`.
+
+After a release the tool is dormant: a new version appears only for a reported bug, a request, or a security problem. Security always comes first.

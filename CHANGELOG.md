@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.0] - 2026-11-25
+
+Changes made after 2026-11-25; the version number did not change.
 
 ### Fixed
 
@@ -42,6 +44,5 @@
 - The test job in CI runs on Windows and macOS as well as Linux.
 - `Cargo.toml` has `repository`, `homepage` and `documentation`.
 
-## [0.1.0]
 
 First version: `cost-check report`, `render` and `serve`, with one report shape for `ci-bill`, `log-bill`, `dd-metric-bill` and `rum-meter`.
