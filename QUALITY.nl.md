@@ -1,8 +1,8 @@
 # Kwaliteitsnotities
 
-pep: niet AF
+pep: 10
 
-Update 2026-11-26: B-2 is hersteld in 6778ec7 (zie hieronder). De pep-regel hierboven blijft zoals hij is gezet en wordt in deze wijziging niet opnieuw berekend.
+B-2 is hersteld in 6778ec7 (zie hieronder), dus er is geen open B of B- meer en de tool is klaar. Er is geen open B, B-, M, M-, S of S- over: 10 − 0 = 10. Andere open punten in deze repository hebben geen klasse en tellen niet mee.
 
 Korte, eerlijke stand van wat in deze repository getest is en hoe. Engelse versie: [QUALITY.md](QUALITY.md).
 
