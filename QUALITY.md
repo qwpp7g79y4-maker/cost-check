@@ -1,6 +1,6 @@
 # Quality notes
 
-pep: 8.6
+pep: 10
 
 Short, honest status of what is tested in this repository and how. Dutch version: [QUALITY.nl.md](QUALITY.nl.md).
 

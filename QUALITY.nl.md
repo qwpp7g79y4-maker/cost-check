@@ -1,6 +1,6 @@
 # Kwaliteitsnotities
 
-pep: 8.6
+pep: 10
 
 Korte, eerlijke stand van wat in deze repository getest is en hoe. Engelse versie: [QUALITY.md](QUALITY.md).
 
