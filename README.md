@@ -10,7 +10,7 @@ Cost Check starts the existing binary of each tool and reads only its JSON. It d
 
 ## Installation
 
-Rust 1.85 or newer. The package is not published to crates.io, so build it from a checkout of this repository:
+Rust 1.85 or newer. Build it from a checkout of this repository:
 
 ```sh
 cargo build --release -j 2

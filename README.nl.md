@@ -8,7 +8,7 @@ De klant levert een export aan. Het programma schrijft het rapport in de vorm va
 
 ## Installatie
 
-Rust 1.85 of nieuwer. Het pakket staat niet op crates.io; bouw het uit een checkout van deze repository:
+Rust 1.85 of nieuwer. Bouw het uit een checkout van deze repository:
 
 ```sh
 cargo build --release -j 2
