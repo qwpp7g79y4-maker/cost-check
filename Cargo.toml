@@ -8,7 +8,6 @@ license = "MIT OR Apache-2.0"
 description = "One offline Cost Check report for ci-bill, log-bill, dd-metric-bill and rum-meter"
 readme = "README.md"
 repository = "https://github.com/qwpp7g79y4-maker/cost-check"
-homepage = "https://github.com/qwpp7g79y4-maker/cost-check"
 documentation = "https://github.com/qwpp7g79y4-maker/cost-check"
 exclude = [".github/", "*-plugin/"]
 
